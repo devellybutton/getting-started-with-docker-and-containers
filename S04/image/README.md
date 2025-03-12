@@ -56,6 +56,18 @@
 
 ## Dockerfile
 
+### 1. Dockerfile
+- 이미지를 만들기 위한 설계도 역할
+- Dockerfile에 명시된 명령어(Instruction) 기반으로 이미지를 생성함
+- 작동 방식 : 설계도 => 이미지 생성(빌드) => 실행 
+
+### 2. 명령어 형식
+```
+Instruction arguments
+```
+- <b>INSTRUCTION</b>: 대문자로 작성하는 명령어 (예: FROM, RUN, COPY)
+- <b>arguments</b>: 해당 명령어에 전달할 인자값
+
 ---
 
 ## 자주 쓰는 명령어
