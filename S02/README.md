@@ -1,7 +1,8 @@
-### 1. [nginx](#nginx)
-### 2. [PostgreSQL](#postgresql)
-### 3. [httpd](#httpd)
-### 4. [node](#node)
+# 섹션 2. 무작정 띄워보기
+- [nginx](#nginx)
+- [PostgreSQL](#postgresql)
+- [httpd](#httpd)
+- [node](#node)
 
 ---
 
