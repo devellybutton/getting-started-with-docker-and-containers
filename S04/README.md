@@ -334,3 +334,154 @@ docker build [옵션] [빌드 컨텍스트 경로]
 ---
 
 ## 빌드 캐시의 정의 및 활용
+
+### 1. 빌드 캐시의 이해
+
+#### 빌드 캐시
+- Docker 이미지 <b>빌드 과정에서 생성된 레이어를 저장</b>하여 반복적인 빌드 속도를 크게 향상시키는 매커니즘
+- 변경점이 없다는 가정 하에 매우 빠른 빌드 & 실행 가능
+
+#### 작동 원리
+1. 첫 번째 빌드: 모든 단계가 처음부터 실행되어 각 명령어마다 새 레이어 생성
+2. 이후 빌드: 변경되지 않은 부분은 캐시된 레이어를 재사용하여 빌드 시간 단축
+
+#### 캐시 무효화 시점
+- 특정 레이어가 변경되면 <b>해당 레이어와 그 이후의 모든 레이어가 무효화</b>됨(다시 빌드).
+```
+FROM node:14
+WORKDIR /app
+COPY package.json .       # package.json이 변경되면 이후 단계 모두 재실행
+RUN npm install           # 새로 실행됨
+COPY src/ .               # 새로 실행됨
+CMD ["npm", "start"]      # 새로 실행됨
+```
+
+#### 빌드 캐시 효율적 활용 전략
+- 변경 빈도에 따른 명령어 배치
+  - 자주 변경되는 파일(소스 코드)은 가능한 마지막에 복사하여 캐시 활용도를 높임.
+    ```
+    # 좋은 예시 (변경이 적은 항목을 상단에 배치)
+    FROM node:14
+    WORKDIR /app
+    COPY package.json package-lock.json ./  # 의존성 정의 파일만 먼저 복사
+    RUN npm ci                              # 의존성 설치 (자주 변경되지 않음)
+    COPY . .                                # 소스 코드 복사 (자주 변경됨)
+    ```
+- RUN 명령어 최적화
+  - RUN 명령어는 전달된 문자열이 정확히 일치하는 경우에만 캐시를 활용
+  ```
+  # 여러 관련 명령어를 한 RUN에 결합하여 레이어 수 감소
+  RUN apt-get update && \
+      apt-get install -y curl && \
+      rm -rf /var/lib/apt/lists/*
+  ```
+- 캐시 관련 옵션
+  - 캐시 비활성화: `docker build --no-cache`
+  - 캐시 삭제: `docker builder prune -a -f` (디스크 공간 확보)
+
+#### Dockerfile 작성 모범 사례
+1. 명확한 태그 사용
+  ```
+  # 좋음: 명확한 버전 지정
+  FROM node:14-alpine
+
+  # 좋지 않음: 불명확한 최신 버전
+  FROM node:latest
+  ```
+2. ENTRYPOINT와 CMD 적절히 구분
+  ```
+  # 실행 파일은 ENTRYPOINT로 지정
+  ENTRYPOINT ["nginx"]
+
+  # 기본 인자는 CMD로 지정
+  CMD ["-g", "daemon off;"]
+  ```
+3. 레이어 수 최적화
+- 레이어를 줄이면 이미지 크기 감소, 압축 효율 증가, 로딩 속도 개선 효과
+  ```
+  # 좋지 않음: 여러 RUN 명령으로 레이어 증가
+  RUN apt-get update
+  RUN apt-get install -y curl
+  RUN apt-get clean
+
+  # 좋음: 단일 RUN 명령으로 레이어 최소화
+  RUN apt-get update && \
+      apt-get install -y curl && \
+      apt-get clean
+  ```
+4. 예측 가능한 Dockerfile 작성
+  - ADD 대신 COPY 사용 (더 명시적이고 예측 가능)
+  - ARG에 기본값 설정
+  - 절대 경로 대신 상대 경로 사용
+    ```
+    # ARG에 기본값 설정으로 Dockerfile 단독으로 작동 가능
+    ARG NODE_VERSION=14
+
+    # COPY는 ADD보다 예측하기 쉬움 (자동 압축 해제 등의 추가 기능이 없음)
+    COPY ./app /app
+    ```
+5. 아키텍처 고려
+  - 크로스 플랫폼 배포를 위해 명시적으로 플랫폼 지정
+    ```
+    docker build -t myapp --platform linux/amd64 .
+    ```
+
+### 2. 빌드 캐시를 활용한 효율화 
+
+![Image](https://github.com/user-attachments/assets/1abdd10d-ae75-448b-a29e-d5b9d54c5b98)
+
+1. 먼저 기본 Docker 이미지를 빌드
+  ```
+  docker build -t web .
+  ```
+
+2. 다른 Node.js 버전(22)으로 별도 태그의 이미지를 빌드
+  ```
+  docker build -t web:node22 --build-arg IMAGE_VERSION=22 .
+  ```
+
+3. ENTRYPOINT/CMD 오버라이드 예제를 실행
+  ```
+  docker run --rm web help  # npm help 실행
+  docker run --rm -it --entrypoint sh web  # 쉘로 진입
+  ```
+
+4. 백그라운드로 웹 애플리케이션 컨테이너를 실행
+  ```
+  docker run -d --rm -p 8080:5000 --name web web
+  ```
+
+5. EXPOSE를 사용한 동적 포트 매핑으로 두 번째 컨테이너를 실행
+  ```
+  docker run -d --rm -P --name web22 web:node22
+  ```
+- <b>`-P` (대문자 P)</b>
+  - 컨테이너 내부에서 EXPOSE로 지정된 모든 포트를 호스트의 임의 포트에 자동으로 매핑
+  - `-p 8080:5000`처럼 직접 포트 매핑을 지정하는 대신, Docker가 자동으로 호스트의 사용 가능한 포트를 할당
+  - 실제 할당된 포트는 docker ps 명령으로 확인
+
+6. 각종 확인 명령어를 실행
+  ```
+  docker images  # 이미지 목록 확인
+  docker ps  # 실행 중인 컨테이너 확인
+  curl http://localhost:8080  # 애플리케이션 동작 테스트
+  docker exec web env  # 환경 변수 확인
+  ```
+
+7. 컨테이너와 볼륨을 정리
+  ```
+  docker rm -f -v web web22
+  ```
+
+8. 마지막으로 최적화된 Dockerfile.new로 새 이미지를 빌드하고 실행
+  ```
+  docker build -t web -f Dockerfile.new .; docker run --rm -it web
+  ```
+
+![Image](https://github.com/user-attachments/assets/e7d19485-336a-4e56-b022-8c20913cabd2)
+
+![Image](https://github.com/user-attachments/assets/07cd60dd-c541-4d99-9a2f-27f233c3da10)
+
+- 8번으로 현재 실행 중인 컨테이너는 내부적으로 5000번 포트에서 웹 애플리케이션을 실행하고 있지만
+호스트 시스템(내 컴퓨터)의 어떤 포트에도 매핑되어 있지 않아서
+브라우저에서 접속할 방법이 없음.
