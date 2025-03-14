@@ -20,3 +20,7 @@ docker run --rm -d --name b3 --network rex --network-alias bb busybox sleep infi
 docker inspect b1
 
 docker run --rm -it --name b3 --network rex busybox sh
+
+# 삭제 
+docker rm -f $(docker ps -a -q)  # 모든 컨테이너(실행 중 + 중지된)의 ID
+docker network rm rex  # rex 네트워크를 삭제
