@@ -12,6 +12,9 @@ exit
 ##### --network-alias #####
 docker run --rm -d --name b1 --network rex --network-alias bb busybox sleep infinite
 docker run --rm -d --name b2 --network rex --network-alias bb busybox sleep infinite
+docker run --rm -d --name b3 --network rex --network-alias bb busybox sleep infinite
+
+### ngnix (reverse proxy)
 
 # dnsname, alias 살펴보기
 docker inspect b1
