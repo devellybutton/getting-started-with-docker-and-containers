@@ -54,3 +54,19 @@
 - 익명 볼륨보다는 Named Volume 사용 권장
 - 민감한 데이터 접근 시 읽기 전용으로 설정
 - 필요한 경우에만 쓰기 권한 부여
+
+## 익명 볼륨 vs 기명 볼륨
+### Anonymous Volume
+![Image](https://github.com/user-attachments/assets/a9acc644-a001-4720-adb0-a34d2df19811)
+
+![Image](https://github.com/user-attachments/assets/370baf19-4816-40e2-a5ec-6459e0882c77)
+
+- 볼륨 이름이 랜덤 문자열이라고 해서 무조건 익명 볼륨이 아님
+라벨을 확인해야함.
+
+### Named Volume
+![Image](https://github.com/user-attachments/assets/d2a472f5-8c93-4a3e-92e8-3004b6ce9716)
+
+![Image](https://github.com/user-attachments/assets/1797483e-69e0-4893-88c9-4d69d170a4d4)
+
+- 볼륨 삭제할 떄 이름을 지정해줘야함.
