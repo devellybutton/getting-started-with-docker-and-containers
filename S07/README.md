@@ -100,6 +100,40 @@ docker run --rm -it busybox sh
 
 ### docker run: 컨테이너 실행
 
+- [entrypoint에 대하여](./entrypoint/README.md)
+
+#### 볼륨 마운트
+```
+-v "$(pwd)"/index.html:/usr/local/apache2/htdocs/index.html:ro
+```
+- `$(pwd)`: 현재 작업 디렉토리(리눅스/macOS에서 사용)를 의미
+- `:ro` : 컨테이너 내부에서 이 파일을 수정할 수 없도록 함.
+- 호스트의 현재 디렉토리에 있는 `index.html` 파일을 컨테이너 내부의 Apache 웹 서버 문서 루트에 마운트함.
+    - 내 로컬 컴퓨터의 현재 폴더에 있는 `index.html` 파일을 그대로 웹 서버의 기본 페이지로 사용하라는 의미
+    - 호스트에서 `index.html`을 수정하면 컨테이너 내부에서도 바로 변경사항이 반영됨.
+
+#### 네트워크 삭제
+```
+docker network rm -f run
+```
+- `-f` 옵션(강제 삭제)은 네트워크 삭제 명령어에서는 작동하지 않음.
+- 네트워크에 연결된 컨테이너가 있으면 먼저 해당 컨테이너를 중지하고 나서 네트워크를 삭제해야 함.
+
+- 도커가 -it 플래그로 실행 중인 상태에서 터미널 상호작용이 변경되면 신호가 전달될 수 있음.
+
+<details>
+<summary><i>docker-run.sh</i></summary>
+
+![Image](https://github.com/user-attachments/assets/c89c80cb-61a7-4573-b008-f1ffaeb24ac2)
+
+![Image](https://github.com/user-attachments/assets/657af01c-20d6-48ee-b8ec-92aebfe1d936)
+
+![Image](https://github.com/user-attachments/assets/4757f7ec-6424-4ed0-89fa-1c1c7a744fc7)
+
+![Image](https://github.com/user-attachments/assets/c1e49574-7934-4306-ba69-a58a3337f23d)
+
+</details>
+
 ### docker exec: 컨테이너 내부에 프로세스 실행
 
 ### docker logs: 컨테이너 로그 확인 
