@@ -4,8 +4,14 @@ docker run -d -p 8080:80 --name nginx nginx
 # 서버 응답 및 관련 정보 모두 출력하지 않음(-s -o /dev/null)
 curl -s -o /dev/null http://localhost:8080
 
+# 윈도우에서는 아래 명령어로 실행
+curl.exe -s -o /dev/null http://localhost:8080
+
 # 1초 마다 요청을 보냄
 while true; do curl -s -o /dev/null http://localhost:8080; sleep 1; done
+
+# 윈도우 파워셀
+while ($true) { curl.exe -s -o /dev/null http://localhost:8080; Start-Sleep -Seconds 1 }
 
 # 로그 출력
 docker logs nginx
