@@ -163,7 +163,70 @@ docker network rm -f run
 
 ### docker logs: 컨테이너 로그 확인 
 
+- `while ($true) { curl.exe -s -o /dev/null http://localhost:8080; Start-Sleep -Seconds 1 }`
+    - 무한 루프를 돌며
+    - NGINX 서버에 요청을 조용히 보내고 (-s 옵션으로 출력 없음)
+    - 응답을 버리고 (-o /dev/null로 출력 리다이렉션)
+    - 1초를 기다린 후 다시 반복
+
+#### 로그 확인 방법
+- `docker logs nginx`: 기본 로그 출력
+- `docker logs -t nginx`: 타임스탬프와 함께 로그 출력
+- `docker logs -f nginx`: 로그를 실시간으로 계속 확인(follow)
+
+#### 시간 기준 로그 필터링
+- `docker logs -f --since 10s nginx`: 최근 10초 동안의 로그만 표시
+- `docker logs --until 10s nginx`: 10초 전까지의 로그만 표시
+- `docker logs -f --since 10s --until 1m nginx`: 10초 전부터 1분 전까지의 로그
+- `docker logs -f --since=2024-07-11T00:00:00Z --until=2024-07-11T01:30:30Z nginx`: 특정 시간대의 로그만 표시
+
+<details>
+<summary><i>docker-logs.sh</i></summary>
+
+![Image](https://github.com/user-attachments/assets/ca748f02-5422-454d-bfd2-c390da935b2a)
+
+![Image](https://github.com/user-attachments/assets/e1d75b6f-32a1-4f33-9ed5-ede754da9e43)
+
+</details>
+
 ### docker inspect: 컨테이너 세부 정보 확인
+- Docker 객체(컨테이너, 이미지, 네트워크, 볼륨 등)에 대한 상세 정보를 JSON 형식으로 보여주는 명령어
+- 이 명령어는 다양한 Docker 객체의 내부 구조, 설정, 상태 등을 확인할 때 매우 유용
+
+#### 기본 정보
+- `Id`: 컨테이너의 전체 ID
+- `Created`: 컨테이너 생성 시간
+- `Path & Args`: 컨테이너에서 실행 중인 명령어 ("sleep 10")
+
+#### State: 컨테이너 상태 정보
+- `Status`: 현재 상태 (running)
+- `Running`: 실행 중인지 여부 (true/false)
+- `StartedAt`: 시작 시간
+- `FinishedAt`: 종료 시간
+- `ExitCode`: 종료 코드
+
+#### 주요 경로 정보
+- `LogPath`: 로그 파일 위치
+- `ResolvConfPath`: DNS 설정 파일 위치
+- `HostsPath`: hosts 파일 위치
+
+#### Config: 컨테이너 구성 정보
+- `Cmd`: 실행 명령어
+- `Image`: 사용된 이미지
+- `Env`: 환경 변수
+
+#### NetworkSettings: 네트워크 구성
+- `IPAddress`: 컨테이너 IP 주소 (172.17.0.2)
+- `Gateway`: 게이트웨이 주소 (172.17.0.1)
+- `MacAddress`: MAC 주소
+- `Networks`: 연결된 네트워크 정보
+
+<details>
+<summary><i>docker-inspect.sh</i></summary>
+
+![Image](https://github.com/user-attachments/assets/18cb11e7-75ad-4896-b89a-7e050c0ede15)
+
+</details>
 
 ## 컨테이너 재시작 정책
 
