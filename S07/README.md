@@ -2,7 +2,12 @@
 
 ## 컨테이너의 정의
 - 컨테이너는 실행에 필요한 모든 파일과 의존성을 이미지화하여, 호스트 시스템으로부터 격리된 환경에서 실행되는 프로세스
+- 호스트 OS의 커널을 공유하면서 프로세스를 격리된 환경에서 실행하는 기술 <b>(격리된 프로세스 그룹)</b>
 - 이 격리된 환경에서 애플리케이션이 동작하므로 호스트 시스템이나 다른 컨테이너에 영향을 주지 않고 일관된 방식으로 실행됨.
+
+1. 도커 컨테이너는 "격리된 프로세스 그룹"
+2. 도커 데몬이 이러한 프로세스들의 생명주기와 격리를 관리함.
+3. 컨테이너의 격리는 리눅스 커널 기능을 통해 구현됨.
 
 ## 컨테이너의 생명주기 (Lifecycle)
 `created` -> `running` -> `paused` -> `stopped` -> `restart` -> `deleted` 
@@ -12,7 +17,12 @@
 - jq 다운로드 [https://jqlang.org/download/]
 - winget으로 jq 다운로드 방법 [https://learn.microsoft.com/en-us/windows/package-manager/winget/]
 
+<details>
+<summary><i>winget 설치 화면</i></summary>
+
 ![Image](https://github.com/user-attachments/assets/03bc161e-a363-47bd-b27b-cba8743bf53d)
+
+</details>
 
 ### 컨테이너 생명주기 살펴보기 
 
@@ -119,7 +129,7 @@ docker network rm -f run
 - `-f` 옵션(강제 삭제)은 네트워크 삭제 명령어에서는 작동하지 않음.
 - 네트워크에 연결된 컨테이너가 있으면 먼저 해당 컨테이너를 중지하고 나서 네트워크를 삭제해야 함.
 
-- 도커가 -it 플래그로 실행 중인 상태에서 터미널 상호작용이 변경되면 신호가 전달될 수 있음.
+- 도커가 `-it` 플래그로 실행 중인 상태에서 터미널 상호작용이 변경되면 신호가 전달될 수 있음.
 
 <details>
 <summary><i>docker-run.sh</i></summary>
@@ -135,6 +145,21 @@ docker network rm -f run
 </details>
 
 ### docker exec: 컨테이너 내부에 프로세스 실행
+
+#### 도커에서 sleep infinite 명령어를 사용하는 이유
+1. <b>컨테이너를 계속 실행 상태로 유지하기 위함</b>
+- 도커 컨테이너는 기본적으로 메인 프로세스(PID 1)가 종료되면 같이 종료됨
+- sleep infinite는 절대 종료되지 않는 프로세스이므로, 컨테이너를 계속 실행 상태로 유지할 수 있음
+2. <b>최소한의 리소스 사용</b>
+- sleep 명령어는 CPU나 메모리를 거의 사용하지 않음
+- 따라서 컨테이너를 백그라운드에서 실행 상태로 유지하는 가장 경제적인 방법
+
+<details>
+<summary><i>docker-exec.sh</i></summary>
+
+![Image](https://github.com/user-attachments/assets/623c96fc-7a8e-4adf-bca6-67849495a891)
+
+</details>
 
 ### docker logs: 컨테이너 로그 확인 
 
