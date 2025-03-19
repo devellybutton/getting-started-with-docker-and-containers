@@ -230,7 +230,36 @@ docker network rm -f run
 
 ## 컨테이너 재시작 정책
 
+### 1. 컨테이너 오류 시 발생할 수 있는 문제
+- 재시작 없음: 서비스 장애 지속, 비즈니스 영향 증가
+- 무조건 재시작: 실패 요청 반복으로 다른 서비스 및 자원에 부담 증가
+
+### 2. 도커 재시작 정책 옵션(`docker run --restart [VALUE]`)
+
+| 정책        | 설명                                                                 |
+|-------------|----------------------------------------------------------------------|
+| **no**      | 자동 재시작 없음 (기본값)                                               |
+| **on-failure[:max-retries]** | 종료 코드가 0이 아닐 때만 재시작                                        |
+| **always**  | 수동 삭제(rm) 전까지 항상 재시작  <br>  - `docker stop` 후에는 재시작 안 함 <br> - 도커 데몬 재시작 시 컨테이너도 재시작됨                                   |
+| **unless-stopped** | always와 유사하나, 도커 데몬 재시작 시에도 컨테이너 재시작 안 함           |
+
 ### 실습 - 컨테이너 재시작 정책
+
+- ExitCode가 1인 것은 정상 종료(0)가 아닌 오류로 인한 종료
+
+#### always vs unless-stopped
+- 도커 데몬이 재시작될 때의 차이
+- `always`: 도커 서비스가 재시작되면 이전에 중지했던 컨테이너도 모두 재시작됨
+- `unless-stopped`: 도커 서비스가 재시작되어도 이전에 명시적으로 중지했던 컨테이너는 재시작되지 않음
+
+<details>
+<summary><i>restart-policy.sh</i></summary>
+
+![Image](https://github.com/user-attachments/assets/101958da-d371-4ecd-9d43-b058491a0ae5)
+
+![Image](https://github.com/user-attachments/assets/dcc90589-5ca3-44ce-a85a-edee9e58d133)
+
+</details>
 
 ### 실습 - 도커를 활용한 서비스 개발 환경 구축
 
