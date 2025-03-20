@@ -20,7 +20,7 @@
 
 ### 3. WAS
 - 이미지 빌드
-- 컨테이너 실행
+- 컨테이너 실행 (was1)
 <details>
 <summary><i>진행 과정</i></summary>
 
@@ -54,10 +54,20 @@
 - WAS 서비스는 직접 외부에 노출되지 않고, Nginx를 통해 요청이 전달되어 보안과 로드 밸런싱 등의 이점
 ![Image](https://github.com/user-attachments/assets/f7678924-8157-45d1-82c5-96f9a7c4c7e2)
 
+#### 경로 불일치시 오류
+- 터미널 실행할 떄 경로 맞는지 확인하자
+![Image](https://github.com/user-attachments/assets/22254add-3d2f-4644-99eb-617433547d52)
+
+#### 성공하면 나오는 화면
+![Image](https://github.com/user-attachments/assets/0a987415-729a-4730-afda-5ff09c9e5164)
+
 </details>
 
 ### 5. 스케일링을 위한 명령어 입력
 - 추가 컨테이너 실행 및 Nginx 리로드
+    - was2도 실행, nginx 리로드 명령어 입력
+
+![Image](https://github.com/user-attachments/assets/846515f3-104b-4062-b2cf-4850ea96ce67)
 
 --------
 
@@ -89,8 +99,8 @@
 - 각 워커는 많은 동시 연결을 처리할 수 있음
 
 #### 왜 이 로그가 표시되는가?
-- 이 로그는 Nginx가 시작되는 과정에서 워커 프로세스들을 생성하고 있음을 나타냄.
+- 이 로그는 Nginx가 시작되는 과정에서 워커 프로세스들을 생성하고 있음을 나타냄
     - 총 7개의 워커 프로세스(29-35)가 시작됨
     - 이는 정상적인 Nginx 시작 과정의 일부
 - 워커 프로세스 수는 일반적으로 서버의 CPU 코어 수에 맞게 설정되며, 이는 nginx.conf 파일의 worker_processes 지시어로 제어됨
-    - 기본값은 auto로, 자동으로 사용 가능한 CPU 코어 수를 감지합니다.
+    - 기본값은 auto로, 자동으로 사용 가능한 CPU 코어 수를 감지
