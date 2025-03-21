@@ -1,5 +1,7 @@
 # 섹션 8. [프로젝트] 실무 요구사항 해결하기 
 
+![Image](https://github.com/user-attachments/assets/96dd36e6-7053-4f9d-b134-1bbdb427b584)
+
 ## 프로젝트 폴더 분석
 
 - <b>was 폴더</b> - 개발용 3-tier 아키텍처
