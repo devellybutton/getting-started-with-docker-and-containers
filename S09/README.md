@@ -165,13 +165,76 @@ docker compose -p rex down
 
 </details>
 
+### bind mount 대신 watch를 사용하는 이유
+- `bind mount`는 "모든 파일을 항상 공유"하는 방식이고, `watch`는 "필요한 파일만 필요한 방식"으로 처리
+
+1. 선택적 반응이 가능함
+- `bind mount`: 모든 파일 변경을 무조건 컨테이너와 동기화
+- `watch`: 파일 유형에 따라 다른 액션(sync/rebuild)을 취할 수 있음  
+    - 소스 코드 변경: 파일만 빠르게 복사 (sync)
+    - 의존성 파일 변경: 컨테이너 재빌드 (rebuild)
+
+2. 성능과 리소스 관리가 더 좋음
+- `bind mount`: 모든 파일을 실시간으로 동기화하므로 파일이 많을 때 성능 저하가 발생할 수 있음
+- `watch`: 변경된 파일만 처리하여 더 효율적
+
+3. 더 정교한 제어가 가능함
+- `bind mount`: 단순히 디렉토리를 공유하는 방식
+- `watch`: 특정 파일이나 패턴에 따라 다른 액션을 취할 수 있어 더 세밀한 제어가 가능
+
+4. 실제 프로덕션 환경과 더 비슷함
+- `bind mount`: 개발 환경에서만 사용하는 특별한 설정
+- `watch`: 파일을 실제로 컨테이너에 복사하므로 프로덕션 환경과 더 유사한 동작을 보장
+
+![Image](https://github.com/user-attachments/assets/e17766bb-c4fa-4bf2-8f3f-d29ffd338f56)
+
 ---------
 
 ## docker compose develop - 심화
 
+### 1. compose watch와 애플리케이션 로그 관련 문제
+- compose watch는 파일 변경 감지와 반영에 초점을 맞추어 실행되며, 빌드 로그와 watch 결과는 표시되지만, 실제 애플리케이션 로그는 보이지 않음. 
+- 해결방법:
+    - 별도의 터미널에서 `docker compose logs -f` 명령어로 로그를 확인
+    - 로깅 시스템을 외부로 분리 (ELK 스택)
+    - 디버깅 도구를 활용(예: VS Code의 디버그 설정)
+
+### 2. 개발/프로덕션 환경 분리
+#### 파일 구조
+- `compose.yaml`: 모든 환경에서 공통으로 사용되는 설정
+- `dev.compose.yaml`: 개발 환경에서만 필요한 설정 (볼륨 마운트, 개발 포트 등)
+- `prod.compose.yaml`: 프로덕션 환경에서만 필요한 설정(복제본 수, 리소스 제한 등)
+- `dev.dockerfile`/`prod.dockerfile`: 환경별 도커 이미지 빌드 설정
+
+#### 명령어 설정
+- 개발 환경: `docker compose -f compose.yaml -f dev.compose.yaml watch`
+- 프로덕션 환경: `docker compose -f compose.yaml -f prod.compose.yaml up -d --build`
+
+#### watch vs up --watch
+- `watch` : 빌드 로그 O, 앱 로그 X
+- `up --watch`: 빌드 로그 X, 앱 로그 O
+
+
+<details>
+<summary><i>테스트 과정</i></summary>
+
+#### watch vs up --watch
+
+![Image](https://github.com/user-attachments/assets/7296789d-5e5e-4bb6-a39b-44b01910d47b)
+
+![Image](https://github.com/user-attachments/assets/91cfb4df-4f65-42ce-9101-862e94e659a6)
+
+#### 항상 빌드하면서 백그라운드에서 up
+- 개발 환경 설정을 사용하여 모든 서비스를 백그라운드에서 실행하며, 실행 전에 모든 이미지를 새로 빌드
+
+![Image](https://github.com/user-attachments/assets/8b1286c4-ff64-4947-8d59-763c0224b2f5)
+
+</details>
+
 ---------
 
 ## 실무 프로젝트 컴포즈 마이그레이션 - 1
+
 
 ---------
 
