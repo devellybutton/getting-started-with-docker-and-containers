@@ -1,6 +1,6 @@
 services:
   web:
-    build: .
+    build: . # docker build -t web .
     ports:
       - "8000:5000"
     stop_signal: SIGINT # flask는 SIGINT를 받으면 gracefully shutdown 진행
