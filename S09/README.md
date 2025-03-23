@@ -1,4 +1,14 @@
 # 섹션 9. 컴포즈
+- [Docker Compose 등장 배경과 장점](#docker-compose-등장-배경과-장점)
+- [무작정 띄워보기](#무작정-띄워보기)
+- [docker compose build](#docker-compose-build)
+- [docker compose deploy](#docker-compose-deploy)
+- [docker compose develop - 기초](#docker-compose-develop---기초)
+- [docker compose develop - 심화](#docker-compose-develop---심화)
+- [실무 프로젝트 컴포즈 마이그레이션 1](#실무-프로젝트-컴포즈-마이그레이션---1)
+- [실무 프로젝트 컴포즈 마이그레이션 2](#실무-프로젝트-컴포즈-마이그레이션---2)
+
+------------------------
 
 ## Docker Compose 등장 배경과 장점
 
@@ -83,3 +93,32 @@ docker compose -p rex down
 ![Image](https://github.com/user-attachments/assets/eead765e-db72-4f1c-aefd-7fa7d12b1c7c)
 
 </details>
+
+--------------
+
+## docker compose build
+
+- `docker compose build`: compose.yaml에서 build 항목이 있는 모든 서비스의 이미지를 빌드
+- `docker compose up -d`: 컨테이너를 백그라운드로 실행하지만, 이미 빌드된 이미지가 있으면 새로 빌드하지 않고 그대로 사용함. 따라서 소스코드가 변경되어도 반영되지 않음.
+- `docker compose up -d --build`: 컨테이너를 실행하기 전에 항상 이미지를 새로 빌드함. 소스코드 변경사항이 반영됨.
+
+---------
+
+## docker compose deploy
+
+
+---------
+
+## docker compose develop - 기초
+
+---------
+
+## docker compose develop - 심화
+
+---------
+
+## 실무 프로젝트 컴포즈 마이그레이션 - 1
+
+---------
+
+## 실무 프로젝트 컴포즈 마이그레이션 - 2
