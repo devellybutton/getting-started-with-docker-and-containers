@@ -106,10 +106,41 @@ docker compose -p rex down
 
 ## docker compose deploy
 
+### depends on
+- 서비스 간의 시작 순서 지정
+- redis가 실행되어야 web 서비스가 시작될 수 있도록 함
+- 빠르게 시작되는 서비스(redis)는 큰 문제가 없지만, MySQL처럼 시작에 시간과 CPU가 많이 필요한 서비스의 경우 의존성 순서가 중요함.
+- 의존성이 없으면 웹 서비스 컨테이너가 종속된 서비스를 찾지 못해 죽을 수 있음
+
+### deploy 설정
+- `replicas: 1`: 생성할 컨테이너 개수를 지정
+    - 현재 스크립트에는 port 바인딩이 1개만 되어 있으므로 이 상태에서 replicas가 여러 개이면 다른 컨테이너는 포트 바인딩이 안 됨.
+    - [포트 바인딩 문제](./port-binding/README.md)
+- `restart_policy`: 컨테이너가 종료될 때 재시작하는 정책을 설정
+    - `condition`: any: 어떤 상황에서든 재시작합니다.
+    - `on-failure`로 설정하면 오류가 발생했을 때만 재시작합니다.
+    - `max_attempts`: 최대 재시작 시도 횟수 (window 시간 내 실패는 횟수에 포함되지 않음)
+
+### window 옵션
+- `window: 60s`: 컨테이너가 60초 동안 정상 상태로 유지되면 안정적인 상태로 간주
+- 일반적으로 필수는 아님
+
+### stop_signal
+- `stop_signal`: SIGINT: 컨테이너를 중지할 때 보낼 신호를 지정
+- Flask는 SIGINT를 받으면 정상적으로(gracefully) 종료
+
+### 명령어
+- `docker stats`: 모든 컨테이너의 자원 사용량 보여줌
+- `docker compose stats`: Compose로 실행 중인 컨테이너만 보여줌
+- `--wait 옵션`: Compose 명령이 모든 서비스가 정상 상태에 도달할 때까지 기다림
+
+![Image](https://github.com/user-attachments/assets/09709822-e170-410f-8946-05aa99cd2ec1)
 
 ---------
 
 ## docker compose develop - 기초
+
+
 
 ---------
 
