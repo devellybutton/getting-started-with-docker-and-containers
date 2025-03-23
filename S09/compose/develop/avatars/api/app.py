@@ -87,7 +87,8 @@ def avatar_spec():
         'exclusions': {
             'facial_hair_color': {
                 'part': 'facial_hair',
-                'key': 'NONE'
+                'key': 'NONE',
+                'this is': 'test'
             },
             'hair_color': {
                 'part': 'top',

@@ -140,7 +140,30 @@ docker compose -p rex down
 
 ## docker compose develop - 기초
 
+### develop.watch
+- `path`: 호스트 시스템에서 변경 사항을 감시할 경로
+- `target`: 컨테이너 내부에서 변경 사항이 적용될 경로
+- `action`:
+    - `sync`: 변경된 파일만 컨테이너 내부로 복사 (빠름)
+    - `rebuild`: 전체 이미지를 다시 빌드하고 컨테이너 재시작 (느림)
 
+<details>
+<summary><i>avatars 과정</i></summary>
+
+- requirements 파일 변경되면 빌드 다시하고 재시작
+    ![Image](https://github.com/user-attachments/assets/cbc0ea23-dcdb-4123-9272-6e7f499a20c0)
+
+    ![Image](https://github.com/user-attachments/assets/bf2231a7-d989-436f-a326-492ab981858c)
+
+- api 응답결과 변경하면 변경된 부분 복사됨
+![Image](https://github.com/user-attachments/assets/a6c9e061-e6b2-4319-bbe0-a6c68ed630c0)
+
+- 캐시마운트로 빌드와 재빌드 속도 개선
+    - 캐시 마운트: `--mount=type=cache`는 Docker BuildKit의 캐시 기능을 사용
+    - 타겟 디렉토리: `target=/root/.cache/pip`는 pip의 캐시 디렉토리를 지정
+![Image](https://github.com/user-attachments/assets/54845b78-f4d0-4e89-9217-a24ed40ecee1)
+
+</details>
 
 ---------
 
