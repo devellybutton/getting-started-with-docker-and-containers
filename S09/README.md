@@ -235,7 +235,28 @@ docker compose -p rex down
 
 ## 실무 프로젝트 컴포즈 마이그레이션 - 1
 
+### Docker 컨테이너 상태의 의미
+- "Running" 상태는 컨테이너가 시작됐다는 의미일 뿐, 내부 애플리케이션이 정상 작동한다는 보장이 아님
+- 따라서 컨테이너가 실행 중이더라도 애플리케이션 타임아웃이 발생할 수 있음.
+
+    ![Image](https://github.com/user-attachments/assets/98d160f7-e61b-4411-b86a-7a82a6509edc)
+
+### Docker Compose 의존성 관리
+- `depends_on`을 설정하면 연결된 모든 서비스가 재시작됨.
+- 운영 환경에서는 --no-deps 옵션을 사용하여 의존성 서비스의 불필요한 재시작을 방지해야 함.
+- 예: `docker-compose up -d --build --no-deps service_name`
+
+### 서비스 의존성 문제
+- `depends_on`으로 인해 DB가 재시작되면 웹 서버도 재시작되어 타임아웃이나 서비스 중단이 발생함.
+
+### 이를 해결하기 위한 방법
+- healthcheck를 사용하여 컨테이너 내부 애플리케이션의 상태를 확인
+- CMD vs CMD-shell 문제 고려 (shell 형식으로 실행할지 직접 실행할지)
 
 ---------
 
 ## 실무 프로젝트 컴포즈 마이그레이션 - 2
+
+![Image](https://github.com/user-attachments/assets/1fc34894-ff02-4e87-8333-212144542b86)
+
+![Image](https://github.com/user-attachments/assets/54222521-bf9b-44e8-8b89-3cbf8ddbc518)
