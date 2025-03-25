@@ -248,6 +248,18 @@ docker compose -p rex down
 
 ### 서비스 의존성 문제
 - `depends_on`으로 인해 DB가 재시작되면 웹 서버도 재시작되어 타임아웃이나 서비스 중단이 발생함.
+- db가 재시작될 때 web이 같이 재시작된다.
+    ```
+    services:
+        web:
+            build:
+            depends_on:
+                db:
+                    condition: service_healthy
+                    restart: true
+                redis:
+                    condition: service_started
+    ```
 
 ### 이를 해결하기 위한 방법
 - healthcheck를 사용하여 컨테이너 내부 애플리케이션의 상태를 확인
