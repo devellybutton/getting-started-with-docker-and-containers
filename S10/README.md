@@ -3,7 +3,7 @@
 ## 아키텍처
 ![Image](https://github.com/user-attachments/assets/4fb3418d-3b17-4cc0-98a9-b23ec224e9cd)
 
-- 엔지니어가 코드를 GitHub 저장소(Repository)에 푸시하면, GitHub Actions가 자동으로 트리거됨. GitHub Actions는 두 가지 주요 작업을 수행:
+- 엔지니어가 코드를 GitHub 저장소(Repository)에 푸시하면, workflow yaml이 실행되고, GitHub Actions가 자동으로 트리거됨. GitHub Actions는 두 가지 주요 작업을 수행:
 1. 코드를 사용하여 도커 이미지를 빌드하고 이를 ECR(Elastic Container Registry)에 저장
 2. SSH를 통해 서버에 접속하여 배포 명령을 실행
 - 서버는 ECR에서 새롭게 빌드된 도커 이미지를 가져와 실행함으로써 애플리케이션을 업데이트
@@ -32,6 +32,23 @@
 | **Action** | 자주 반복되는 작업을 편리하게 실행할 수 있도록 도와주는 애플리케이션 |
 
 ## 무작정 실행해보기
+- 레포 생성 > Actions > simple 검색 후 선택 
+- `.github`부터 `workflow` 까지는 규칙
+- 앞이 `runner`나 `github`으로 시작하는 것만 보면 됨
+- terraform: 디버깅 하기 위한 폴더
+
+### 변수 표현 방식 차이
+- `${{ runner.os }}`: 컨텍스트 변수
+    - GitHub Actions가 워크플로우를 실행하기 전에 해석/처리
+- `$RUNNER_OS`: 환경 변수
+    - 워크플로우가 실제로 실행되는 시점에 셸(shell)에 의해 해석
+
+```
+$ echo "Linux" Linux
+Linux Linux
+```
+- 첫 번째 "Linux"는 `${{ runner.os }}`가 GitHub에 의해 대체된 값
+- 두 번째 "Linux"는 `$RUNNER_OS` 환경 변수가 셸에 의해 해석된 값
 
 ## 도커 배포 환경 구성
 
