@@ -1,5 +1,5 @@
 # 꼭 ec2-user로 접근!
-ssh -i rex.pem ec2-user@[EC2 PUBLIC DOMAIN]
+ssh -i docker-cicd-key.pem ec2-user@퍼블릭 ipv4 도메인
 
 # docker compose 형태로 명령 실행가능하도록 설정
 DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}

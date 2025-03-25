@@ -37,6 +37,9 @@
 - 앞이 `runner`나 `github`으로 시작하는 것만 보면 됨
 - terraform: 디버깅 하기 위한 폴더
 
+### docker compose 명령 사용 가능하게 하기
+![Image](https://github.com/user-attachments/assets/378c62aa-de85-44d8-a1ee-b9341133b9d4)
+
 ### 변수 표현 방식 차이
 - `${{ runner.os }}`: 컨텍스트 변수
     - GitHub Actions가 워크플로우를 실행하기 전에 해석/처리
@@ -51,8 +54,50 @@ Linux Linux
 - 두 번째 "Linux"는 `$RUNNER_OS` 환경 변수가 셸에 의해 해석된 값
 
 ## 도커 배포 환경 구성
+- SCP(Secure Copy Protocol)를 통한 파일 복사
+- SSH를 통한 빌드 및 실행
+
+### 사전 준비
+- `userdata.sh` 파일의 내용을 EC2의 "User Data" 섹션에 복사 
+    ![Image](https://github.com/user-attachments/assets/56779fc3-80d8-4523-8152-a328c3f12769)
+
+1. 키 파일 설정
+    - too open 에러 뜨면
+    ```
+    chmod 400 docker-cicd-key.pem
+    ```
+
+2. SSH로 EC2 인스턴스 접속
+    ```
+    ssh -i docker-cicd-key.pem ec2-user@[EC2-퍼블릭-도메인]
+    ```
+
+3. GitHub 프로젝트 설정
+    - `.github/workflows` 디렉토리에 워크플로우 파일을 `simple-cicd.yaml`로 생성/변경
+    - GitHub 저장소의 Settings > Secrets and Variables에서 필요한 환경변수와 시크릿 설정:
+        - EC2 관련 접속 정보
+        - 필요한 인증 정보
+
+4. SCP를 통한 파일 복사 (GitHub Actions에서 자동화)
+    - GitHub Actions 워크플로우 파일에 SCP 관련 단계 추가
+    - 로컬 코드를 EC2 인스턴스로 복사
+        ![Image](https://github.com/user-attachments/assets/a843e324-fc0b-4178-96be-d77725142697)
+
+5. 배포 및 실행 (GitHub Actions에서 자동화)
+    - SSH 명령어로 EC2에서 Docker 빌드 및 실행 명령어 수행
+
+6. 애플리케이션 접속을 위한 설정
+    - EC2 보안 그룹에서 애플리케이션 포트(예: 8080) 인바운드 규칙 추가
+        ![Image](https://github.com/user-attachments/assets/d08592ae-10d1-4c33-a14e-6a1f5740e933)
+
+7. 웹 브라우저에서 [EC2-퍼블릭-도메인]:8080으로 접속 확인
+    ![Image](https://github.com/user-attachments/assets/5c361c2f-cfc9-4f11-97ea-d451b4317fca)
+
+### Github Actions 플랫폼 캐싱 기능
+![Image](https://github.com/user-attachments/assets/1cb676c3-0b36-4c9d-b6e0-107fb3929ee8)
 
 ## 도커 컴포즈 적용
+
 
 ## 이미지 빌드 및 ECR 적용
 
