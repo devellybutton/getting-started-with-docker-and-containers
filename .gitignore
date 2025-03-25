@@ -175,4 +175,4 @@ override.tf.json
 terraform.rc
 
 # pem keys
-.pem
+*.pem
