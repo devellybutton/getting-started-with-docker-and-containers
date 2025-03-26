@@ -7,6 +7,9 @@
 - [원본 GitHub 저장소](https://github.com/cjsrkd3321/getting-started-with-docker-and-containers)
 - 강사: 천강민
 
+### 섹션 10 docker cicd test 저장소
+- [docker cicd test 저장소 private](https://github.com/devellybutton/docker-cicd-test.git)
+
 ### 목차
 
 - [섹션 1. 강의소개](./S01/README.md)
